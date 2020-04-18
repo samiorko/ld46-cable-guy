@@ -9,6 +9,7 @@ public class GameUI : MonoBehaviour
     public Text m_lengthText;
     public Transform m_serversContainer;
     public GameObject m_serverStatusPrefab;
+    public Text m_usersText;
 
     private void Start()
     {
@@ -17,6 +18,7 @@ public class GameUI : MonoBehaviour
 
     private void Update()
     {
+        m_usersText.text = SceneManager.Instance.CurrentUsers.ToString();
         if (RopeReel.Instance.Active)
         {
             m_lengthText.text = $"{(int) RopeReel.Instance.CurrentRopeLength}m";

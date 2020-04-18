@@ -15,6 +15,8 @@ public class SceneManager : MonoBehaviour
 
     public static SceneManager Instance { get; private set; }
 
+    public int CurrentUsers { get; private set; }
+
     public SceneState State { get; private set; } = SceneState.Running;
 
     private SceneState m_previousState;
@@ -67,6 +69,8 @@ public class SceneManager : MonoBehaviour
     private void AddLoad(float load)
     {
         Racks[0].Load = load;
+        CurrentUsers = (int) (load * m_maxUsersPerRack);
+        if (CurrentUsers < 0) CurrentUsers = 0;
     }
 
     private void DistributeLoads()
