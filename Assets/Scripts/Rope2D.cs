@@ -58,10 +58,4 @@ public class Rope2D : MonoBehaviour
         m_pushRight = false;
         m_end.AddForce(Vector2.right * 100f, ForceMode2D.Impulse);
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
