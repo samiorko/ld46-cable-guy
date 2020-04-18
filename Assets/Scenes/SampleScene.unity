@@ -152,7 +152,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 10
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 1
@@ -334,8 +334,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d43ff7137adb73341bb05b452b5ef775, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  start: {fileID: 1651287357}
-  end: {fileID: 454846386}
+  m_start: {fileID: 1651287357}
+  m_end: {fileID: 454846386}
+  m_partCount: 10
+  m_partMass: 10
+  m_sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_pushRight: 0
 --- !u!4 &1404229009
 Transform:
   m_ObjectHideFlags: 0
