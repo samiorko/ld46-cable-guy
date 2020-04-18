@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -9,26 +8,27 @@ public class RopeRenderer : MonoBehaviour
     public float m_lineWidth;
     private LineRenderer m_lineRenderer;
 
-    private static Material RopeMaterial => _material ?? CreateMaterial();
-    private static Material _material;
+    private static Material RopeMaterial(Color color, Shader shader) => _material.ContainsKey(color) ? _material[color] : CreateMaterial(color, shader);
+    private static readonly Dictionary<Color, Material> _material = new Dictionary<Color, Material>();
 
     // Start is called before the first frame update
-    public void Setup(List<Transform> pointsList, float thickness)
+    public void Setup(List<Transform> pointsList, float thickness, Color color, Shader shader)
     {
         m_lineWidth = thickness;
         m_lineRenderer = gameObject.AddComponent<LineRenderer>();
-        m_lineRenderer.material = RopeMaterial;
+        m_lineRenderer.material = RopeMaterial(color, shader);
+
         m_points = pointsList;
     }
 
-    private static Material CreateMaterial()
+    private static Material CreateMaterial(Color color, Shader shader)
     {
-        _material = new Material(Shader.Find("Specular"))
-        {
-            color = Color.black
-        };
+        var material = new Material(shader) {color = color, name = $"Rope {color}"};
 
-        return _material;
+        _material.Add(color, material);
+
+        Debug.Log("Created material");
+        return material;
     }
 
     // Update is called once per frame

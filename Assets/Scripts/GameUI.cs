@@ -7,7 +7,15 @@ public class GameUI : MonoBehaviour
 {
 
     public Text m_lengthText;
-    void Update()
+    public Transform m_serversContainer;
+    public GameObject m_serverStatusPrefab;
+
+    private void Start()
+    {
+        Refresh();
+    }
+
+    private void Update()
     {
         if (RopeReel.Instance.Active)
         {
@@ -16,6 +24,22 @@ public class GameUI : MonoBehaviour
         else
         {
             m_lengthText.text = "";
+        }
+    }
+
+    public void Refresh()
+    {
+        foreach (Transform obj in m_serversContainer)
+        {
+            Destroy(obj.gameObject);
+        }
+
+        foreach (var rack in SceneManager.Instance.Racks)
+        {
+            var obj = Instantiate(m_serverStatusPrefab).GetComponent<ServerStateBar>();
+            obj.transform.SetParent(m_serversContainer);
+
+            obj.m_rack = rack;
         }
     }
 }

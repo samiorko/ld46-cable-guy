@@ -1,13 +1,10 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using Unity.Mathematics;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
     public static PlayerMovement Instance { get; private set; }
-
     public float FeetHeight => m_feetAnchor.position.y;
 
     public Transform m_feetAnchor;
@@ -34,6 +31,8 @@ public class PlayerMovement : MonoBehaviour
     private bool m_jumping;
 
     private float m_currentJumpHeight;
+
+    public AudioClip m_jumpClip;
 
     private void Awake()
     {
@@ -99,6 +98,9 @@ public class PlayerMovement : MonoBehaviour
         m_preventJumpingUntilAirborne = true;
         var elapsedTime = 0f;
         var startHeight = transform.position.y;
+
+        var source = GetComponent<AudioSource>();
+        source.PlayOneShot(m_jumpClip);
 
         while (elapsedTime < m_jumpDuration)
         {
