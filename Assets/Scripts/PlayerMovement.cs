@@ -8,6 +8,10 @@ public class PlayerMovement : MonoBehaviour
 {
     public static PlayerMovement Instance { get; private set; }
 
+    public float FeetHeight => m_feetAnchor.position.y;
+
+    public Transform m_feetAnchor;
+
     public Transform[] m_feetAnchors;
 
     public bool IsGrounded;
@@ -20,10 +24,16 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 m_movement;
     private Vector2 m_gravity;
 
+    public LayerMask m_groundLayers;
+
+    public float m_castDistance;
+
     public Vector2 Velocity => m_movement + m_gravity;
 
     private bool m_preventJumpingUntilAirborne;
     private bool m_jumping;
+
+    private float m_currentJumpHeight;
 
     private void Awake()
     {
@@ -32,9 +42,14 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        IsGrounded = m_feetAnchors.Any(x => Physics2D.OverlapCircle(x.position, .1f, 1 << 8));
+        IsGrounded = m_feetAnchors.Any(x => Physics2D.OverlapCircle(x.position, .1f, m_groundLayers));
         var movement = GetMovement();
         m_movement = movement;
+        var hitInfo = Physics2D.Raycast(transform.position, m_movement.x > 0f ? Vector2.right : Vector2.left, m_castDistance, m_groundLayers);
+        if (hitInfo.collider != null)
+        {
+            m_movement = m_movement.normalized * hitInfo.distance;
+        }
 
         if (IsGrounded)
         {
@@ -49,8 +64,11 @@ public class PlayerMovement : MonoBehaviour
             }
             m_gravity = Vector2.zero;
         }
+    }
 
-        transform.Translate(m_movement * Time.deltaTime);
+    private void FixedUpdate()
+    {
+        var rb = GetComponent<Rigidbody2D>();
 
         if (!m_jumping && !IsGrounded)
         {
@@ -58,9 +76,21 @@ public class PlayerMovement : MonoBehaviour
             {
                 m_gravity = Physics2D.gravity;
             }
-            m_gravity += Physics2D.gravity * Time.deltaTime;
-            transform.Translate(m_gravity * Time.deltaTime, Space.World);
+            m_gravity += Physics2D.gravity * Time.fixedDeltaTime;
         }
+
+        var newPosition = (Vector2)transform.position + m_movement + (m_gravity * Time.fixedDeltaTime);
+
+        if (m_jumping)
+        {
+            newPosition.y = m_currentJumpHeight;
+        }
+
+        rb.MovePosition(newPosition);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
     }
 
     private IEnumerator Jump()
@@ -78,12 +108,13 @@ public class PlayerMovement : MonoBehaviour
             }
             elapsedTime += Time.deltaTime;
             var t = elapsedTime / m_jumpDuration;
-            var currentY= startHeight + m_jumpHeight * m_jumpCurve.Evaluate(t);
-            transform.position = new Vector2(transform.position.x, currentY);
+            var currentY = startHeight + m_jumpHeight * m_jumpCurve.Evaluate(t);
+            m_currentJumpHeight = currentY;
             yield return null;
         }
 
         m_jumping = false;
+        m_currentJumpHeight = 0f;
         m_preventJumpingUntilAirborne = false; // fail safe to make sure it doesn't get stuck
     }
 
