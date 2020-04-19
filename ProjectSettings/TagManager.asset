@@ -21,8 +21,8 @@ TagManager:
   - GroundLike
   - Rope
   - PostProcess
-  - 
-  - 
+  - Interactables
+  - HoverText
   - 
   - 
   - 

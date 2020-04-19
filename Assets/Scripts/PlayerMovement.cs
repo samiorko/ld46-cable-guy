@@ -4,6 +4,15 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+
+    public enum MovementMode
+    {
+        Normal,
+        Ladder,
+    }
+
+    public MovementMode Mode { get; private set; } = MovementMode.Normal;
+
     public static PlayerMovement Instance { get; private set; }
     public float FeetHeight => m_feetAnchor.position.y;
 
@@ -13,6 +22,7 @@ public class PlayerMovement : MonoBehaviour
 
     public bool IsGrounded;
     public float m_movementSpeed;
+    public float m_ladderSpeed;
 
     public float m_jumpHeight;
     public AnimationCurve m_jumpCurve;
@@ -31,19 +41,43 @@ public class PlayerMovement : MonoBehaviour
     private bool m_jumping;
 
     private float m_currentJumpHeight;
+    private Ladder m_attachedLadder;
 
+    private Rigidbody2D m_rb;
     public AudioClip m_jumpClip;
+
 
     private void Awake()
     {
         Instance = this;
     }
 
+    private void Start()
+    {
+        m_rb = GetComponent<Rigidbody2D>();
+    }
+
     private void Update()
     {
+        if (Mode == MovementMode.Normal)
+        {
+            HandleNormalMovement();
+        }
+        else if (Mode == MovementMode.Ladder)
+        {
+            m_jumping = false;
+            IsGrounded = false;
+            HandleLadderMovement();
+        }
+    }
+
+    private void HandleNormalMovement()
+    {
         IsGrounded = m_feetAnchors.Any(x => Physics2D.OverlapCircle(x.position, .1f, m_groundLayers));
-        var movement = GetMovement();
-        m_movement = movement;
+
+        var horizontal = Input.GetAxis("Horizontal") * m_movementSpeed;
+        m_movement =  horizontal * Vector2.right;
+
         var hitInfo = Physics2D.Raycast(transform.position, m_movement.x > 0f ? Vector2.right : Vector2.left, m_castDistance, m_groundLayers);
         if (hitInfo.collider != null)
         {
@@ -63,19 +97,72 @@ public class PlayerMovement : MonoBehaviour
             }
             m_gravity = Vector2.zero;
         }
+
+        if (Mathf.Abs(Input.GetAxis("Vertical")) > .1f)
+        {
+            var ladders = Physics2D.OverlapCircle(transform.position, .2f, 1 << 12);
+            if (ladders != null && ladders.gameObject != null)
+            {
+                var ladder = ladders.GetComponent<Ladder>();
+                var isTop = ladder.IsTopEnd(transform.position);
+
+                if (isTop && Input.GetAxis("Vertical") > .1f)
+                {
+                    AttachToLadder(ladder);
+                } 
+                else if (!isTop && Input.GetAxis("Vertical") < -.1f)
+                {
+                    AttachToLadder(ladder);
+                }
+            }
+        }
+    }
+
+    private void AttachToLadder(Ladder ladder)
+    {
+        m_rb.bodyType = RigidbodyType2D.Kinematic;
+        m_gravity = Vector2.zero;
+        m_attachedLadder = ladder;
+        var attachmentPoint = m_attachedLadder.GetAttachingPosition(transform.position);
+        transform.position = attachmentPoint;
+        Mode = MovementMode.Ladder;
+    }
+
+    private void DetachFromLadder()
+    {
+        m_rb.bodyType = RigidbodyType2D.Dynamic;
+        m_attachedLadder = null;
+        Mode = MovementMode.Normal;
+    }
+
+    private void HandleLadderMovement()
+    {
+
+        if (transform.position.y > m_attachedLadder.HighestPoint)
+        {
+            DetachFromLadder();
+        } else if (m_feetAnchor.transform.position.y < m_attachedLadder.LowestPoint)
+        {
+            DetachFromLadder();
+        }
+
+        var movement = Input.GetAxis("Vertical") * m_ladderSpeed * Vector2.up;
+        m_movement = movement;
     }
 
     private void FixedUpdate()
     {
-        var rb = GetComponent<Rigidbody2D>();
-
-        if (!m_jumping && !IsGrounded)
+        if (!m_jumping && !IsGrounded && Mode == MovementMode.Normal)
         {
             if (m_gravity == Vector2.zero)
             {
                 m_gravity = Physics2D.gravity;
             }
             m_gravity += Physics2D.gravity * Time.fixedDeltaTime;
+        }
+        else
+        {
+            m_gravity = Vector2.zero;
         }
 
         var newPosition = (Vector2)transform.position + m_movement + (m_gravity * Time.fixedDeltaTime);
@@ -85,7 +172,7 @@ public class PlayerMovement : MonoBehaviour
             newPosition.y = m_currentJumpHeight;
         }
 
-        rb.MovePosition(newPosition);
+        m_rb.MovePosition(newPosition);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -118,29 +205,5 @@ public class PlayerMovement : MonoBehaviour
         m_jumping = false;
         m_currentJumpHeight = 0f;
         m_preventJumpingUntilAirborne = false; // fail safe to make sure it doesn't get stuck
-    }
-
-    private Vector2 GetMovement()
-    {
-        var horizontal = Input.GetAxis("Horizontal") * m_movementSpeed;
-        return horizontal * Vector2.right;
-        //var jump = Input.GetButtonDown("Jump");
-
-        //float maxMovementSpeedAdjustment;
-
-        //if (Mathf.Approximately(Mathf.Sign(m_velocity.x), math.sign(horizontal)))
-        //{
-        //    maxMovementSpeedAdjustment = m_movementSpeed - m_velocity.x;
-        //}
-        //else
-        //{
-        //    maxMovementSpeedAdjustment = m_movementSpeed + m_velocity.x;
-        //}
-
-        //var movement = Mathf.Clamp(horizontal * m_movementSpeed, 0f, maxMovementSpeedAdjustment) * Vector2.right;
-
-        //movement += Mathf.Clamp(horizontal * m_movementSpeed, m_velocity.x + m_movementSpeed, m_velocity.x - m_movementSpeed) * Vector2.right;
-
-        //return movement;
     }
 }

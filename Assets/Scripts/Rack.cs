@@ -43,6 +43,7 @@ public class Rack : MonoBehaviour
     private float m_nextShake;
     public AudioClip m_attachClip;
 
+    public GameObject m_explosionParent;
     private void Start()
     {
         m_attachTarget.transform.SetParent(null);
@@ -53,6 +54,11 @@ public class Rack : MonoBehaviour
             // use coroutines to blink lights independently
             StartCoroutine(nameof(LayerLightBlinker), i);
         }
+    }
+
+    public void Explode()
+    {
+
     }
 
     private void Update()

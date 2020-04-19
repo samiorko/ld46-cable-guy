@@ -23,6 +23,7 @@ public class RopeRenderer : MonoBehaviour
         m_lineWidth = thickness;
         m_lineRenderer = gameObject.AddComponent<LineRenderer>();
         m_lineRenderer.material = RopeMaterial(color, shader);
+        m_lineRenderer.sortingLayerName = "Player";
 
         m_points = pointsList;
     }

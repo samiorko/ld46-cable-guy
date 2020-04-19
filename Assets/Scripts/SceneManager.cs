@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -46,6 +47,12 @@ public class SceneManager : MonoBehaviour
 
     private float m_elapsed;
 
+    [Range(0,1)]
+    public float m_currentLoad;
+    
+    [Range(0,1)]
+    public float m_currentT;
+
     private void Awake()
     {
         if (Instance != null)
@@ -54,10 +61,7 @@ public class SceneManager : MonoBehaviour
         }
 
         Instance = this;
-    }
 
-    private void Start()
-    {
         Racks = GameObject.FindGameObjectsWithTag("Server").Select(x => x.GetComponent<Rack>()).OrderBy(x => x.m_order).ToList();
         m_linkedRacks = Racks.ToDictionary(x => x, _ => new List<Rack>());
     }
@@ -67,11 +71,11 @@ public class SceneManager : MonoBehaviour
         if (State == SceneState.Running)
         {
             m_elapsed += Time.deltaTime;
-            var t = m_elapsed / m_duration;
+            m_currentT = m_elapsed / m_duration;
 
-            var targetLoad = m_curve.Evaluate(t) * Racks.Count;
-                AddLoad(targetLoad);
-                DistributeLoads();
+            m_currentLoad = m_curve.Evaluate(m_currentT) * Racks.Count;
+            AddLoad(m_currentLoad);
+            DistributeLoads();
         }
 
         if (m_stateDidChange)
@@ -157,8 +161,13 @@ public class SceneManager : MonoBehaviour
         }
     }
 
-    private ISet<Rack> FindAllLinkedRacks(Rack from, ISet<Rack> foundRacks)
+    public ISet<Rack> FindAllLinkedRacks(Rack from, ISet<Rack> foundRacks = null)
     {
+        if (foundRacks == null)
+        {
+            foundRacks = new HashSet<Rack>();
+        }
+
         foundRacks.Add(from);
 
         foreach (var rack in m_linkedRacks[from].Except(foundRacks))
@@ -178,5 +187,28 @@ public class SceneManager : MonoBehaviour
     {
         m_linkedRacks[first].Add(second);
         m_linkedRacks[second].Add(first);
+    }
+
+    public bool CalculateOverloadTime(out TimeSpan overloadTime)
+    {
+        // Figure out using the current curve when the server would overload. Do it by just simply trying out values until hit.
+        var racksConnected = FindAllLinkedRacks(Racks[0]).Count;
+        var currentCapacity = racksConnected / (float) Racks.Count;
+
+        var remainingT = 1 - m_currentT;
+        var step = 1f / m_duration; // get step equivalent of one second
+        var steps = remainingT / step;
+
+        for (var i = 1; i < steps; i++)
+        {
+            var evaluated = m_curve.Evaluate(m_currentT + step * i);
+            if (Mathf.Approximately(evaluated, currentCapacity) || evaluated > currentCapacity)
+            {
+                overloadTime = TimeSpan.FromSeconds(m_duration * (step * i));
+                return true;
+            }
+        }
+
+        return false;
     }
 }

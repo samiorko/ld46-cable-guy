@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class RopeReel : MonoBehaviour
 {
@@ -89,8 +92,19 @@ public class RopeReel : MonoBehaviour
         // Link!
         m_parts.Add(CreateLastPart(rack.m_attachTarget));
         SceneManager.Instance.LinkRacks(m_attached, rack);
+        StartCoroutine(nameof(LockRope), m_parts);
         Detach(false);
         return true;
+    }
+
+    private IEnumerator LockRope(List<Transform> parts)
+    {
+        yield return new WaitForSeconds(15f);
+        foreach (var part in parts)
+        {
+            Destroy(part.GetComponent<Joint2D>());
+            Destroy(part.GetComponent<Rigidbody2D>());
+        }
     }
 
     public void Detach(bool createPickup)
@@ -169,7 +183,7 @@ public class RopeReel : MonoBehaviour
         var part = new GameObject("Part");
         part.transform.SetParent(m_currentRope);
         part.gameObject.layer = 10;
-        part.AddComponent<RopeNode>();
+        //part.AddComponent<RopeNode>();
 
         var partCollider = part.AddComponent<CircleCollider2D>();
         partCollider.radius = m_partThickness / 2;

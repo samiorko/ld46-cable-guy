@@ -7,7 +7,6 @@ public class CharacterAnimation : MonoBehaviour
     private Animator m_animator;
     private SpriteRenderer m_renderer;
 
-    public float m_walkThreshold;
     public float m_flipThreshold;
 
     private bool m_flip;
@@ -20,6 +19,8 @@ public class CharacterAnimation : MonoBehaviour
 
     private void Update()
     {
+        m_animator.SetBool("ladder", PlayerMovement.Instance.Mode == PlayerMovement.MovementMode.Ladder);
+
         var movement = Input.GetAxis("Horizontal");
         if (movement > m_flipThreshold)
         {

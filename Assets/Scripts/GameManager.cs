@@ -16,12 +16,20 @@ public class GameManager : MonoBehaviour
     {
         if (Instance)
         {
-            Destroy(this);
+            Destroy(gameObject);
             return;
         }
 
         Instance = this;
         DontDestroyOnLoad(this);
+    }
+
+    private void Update()
+    {
+        if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name.StartsWith("Level_") && Input.GetKeyDown(KeyCode.R))
+        {
+            LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+        }
     }
 
     public string ParseText(string text)

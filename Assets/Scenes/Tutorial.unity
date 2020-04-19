@@ -289,7 +289,12 @@ PrefabInstance:
     - target: {fileID: 1283513678505963302, guid: 7898691e13a3d50458dcf551480d04d8,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -585.32
+      value: -589.66
+      objectReference: {fileID: 0}
+    - target: {fileID: 1283513678505963302, guid: 7898691e13a3d50458dcf551480d04d8,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -312.22
       objectReference: {fileID: 0}
     - target: {fileID: 1517484267047019934, guid: 7898691e13a3d50458dcf551480d04d8,
         type: 3}
@@ -416,6 +421,36 @@ PrefabInstance:
       propertyPath: m_LocalPosition.x
       value: -595.1
       objectReference: {fileID: 0}
+    - target: {fileID: 6303304070633068604, guid: 7898691e13a3d50458dcf551480d04d8,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6303304070633068604, guid: 7898691e13a3d50458dcf551480d04d8,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6303304070633068604, guid: 7898691e13a3d50458dcf551480d04d8,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6303304070633068604, guid: 7898691e13a3d50458dcf551480d04d8,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6303304070633068604, guid: 7898691e13a3d50458dcf551480d04d8,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6303304070633068604, guid: 7898691e13a3d50458dcf551480d04d8,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6516097903690503307, guid: 7898691e13a3d50458dcf551480d04d8,
         type: 3}
       propertyPath: m_player
@@ -435,6 +470,36 @@ PrefabInstance:
         type: 3}
       propertyPath: m_subHeader
       value: 'Objective: Learn the ropes. Also connect servers together.'
+      objectReference: {fileID: 0}
+    - target: {fileID: 6516097904180128423, guid: 7898691e13a3d50458dcf551480d04d8,
+        type: 3}
+      propertyPath: m_curve.m_Curve.Array.data[1].value
+      value: 0.46619415
+      objectReference: {fileID: 0}
+    - target: {fileID: 6516097904180128423, guid: 7898691e13a3d50458dcf551480d04d8,
+        type: 3}
+      propertyPath: m_curve.m_Curve.Array.data[1].time
+      value: 0.9951172
+      objectReference: {fileID: 0}
+    - target: {fileID: 6516097904180128423, guid: 7898691e13a3d50458dcf551480d04d8,
+        type: 3}
+      propertyPath: m_curve.m_Curve.Array.data[0].inSlope
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6516097904180128423, guid: 7898691e13a3d50458dcf551480d04d8,
+        type: 3}
+      propertyPath: m_curve.m_Curve.Array.data[0].outSlope
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6516097904180128423, guid: 7898691e13a3d50458dcf551480d04d8,
+        type: 3}
+      propertyPath: m_curve.m_Curve.Array.data[1].inSlope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6516097904180128423, guid: 7898691e13a3d50458dcf551480d04d8,
+        type: 3}
+      propertyPath: m_curve.m_Curve.Array.data[1].outSlope
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6516097905468534753, guid: 7898691e13a3d50458dcf551480d04d8,
         type: 3}
@@ -752,7 +817,7 @@ PrefabInstance:
     - target: {fileID: 5258105349231744140, guid: c9bec7793278d2744bf169248a9c952c,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 9.95
+      value: 6.16
       objectReference: {fileID: 0}
     - target: {fileID: 5258105349231744140, guid: c9bec7793278d2744bf169248a9c952c,
         type: 3}
@@ -808,6 +873,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: '[PRESS A/D TO MOVE]'
+      objectReference: {fileID: 0}
+    - target: {fileID: 5258105349231744142, guid: c9bec7793278d2744bf169248a9c952c,
+        type: 3}
+      propertyPath: m_textOffset.y
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5258105349231744143, guid: c9bec7793278d2744bf169248a9c952c,
         type: 3}

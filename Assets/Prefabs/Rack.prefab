@@ -606,6 +606,7 @@ MonoBehaviour:
   m_shakeAmount: 0.07
   m_shakeInterval: 0.01
   m_attachClip: {fileID: 8300000, guid: cfd59b8221974d643818b744570cf854, type: 3}
+  m_explosionParent: {fileID: 0}
 --- !u!61 &515096469095571156
 BoxCollider2D:
   m_ObjectHideFlags: 0
