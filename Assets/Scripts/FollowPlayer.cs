@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FollowPlayer : MonoBehaviour
 {
-    public Transform m_player;
+    private Transform m_player;
     public float m_smoothTime;
     public float m_maxSpeed;
     public float m_cameraDistance;
@@ -13,7 +13,12 @@ public class FollowPlayer : MonoBehaviour
     public Transform m_boundsMin;
     public Transform m_boundsMax;
 
-    public void LateUpdate()
+    private void Start()
+    {
+        m_player = GameObject.FindGameObjectWithTag("Player").transform;
+    }
+
+    private void LateUpdate()
     {
         var target = ClampVector(m_player.position, m_boundsMin.position, m_boundsMax.position);
 

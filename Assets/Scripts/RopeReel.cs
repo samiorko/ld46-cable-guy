@@ -6,7 +6,7 @@ public class RopeReel : MonoBehaviour
 {
     public static RopeReel Instance { get; private set; }
     public bool Active => m_attached != null;
-    public float CurrentRopeLength => (m_partLength * (m_parts?.Count ?? 0)) / 2;
+    public int CurrentRopeLength => (int) (m_partLength * (m_parts?.Count ?? 0)) / 2;
 
     public Rack m_attachOnStart;
     public Joint2D m_playerJoint;
