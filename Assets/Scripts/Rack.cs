@@ -1,10 +1,17 @@
 ﻿using System.Collections;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.Events;
+
 
 public class Rack : MonoBehaviour
 {
+    [System.Serializable]
+    public class RackEvent : UnityEvent<Rack>
+    {
+    }
+
+
     public SpriteRenderer[] m_lights;
     public bool[] m_lightStates;
 
@@ -13,6 +20,9 @@ public class Rack : MonoBehaviour
         get => m_rackLoad;
         set => m_rackLoad = value;
     }
+
+    public RackEvent OnExplode;
+    public GameObject m_explodedPrefab;
 
     [Range(0f, 1f)]
     public float m_rackLoad;
@@ -43,7 +53,13 @@ public class Rack : MonoBehaviour
     private float m_nextShake;
     public AudioClip m_attachClip;
 
-    public GameObject m_explosionParent;
+    private bool m_isExploding;
+
+    private void Awake()
+    {
+        if (OnExplode == null) OnExplode = new RackEvent();
+    }
+
     private void Start()
     {
         m_attachTarget.transform.SetParent(null);
@@ -58,7 +74,10 @@ public class Rack : MonoBehaviour
 
     public void Explode()
     {
-
+        var obj = Instantiate(m_explodedPrefab);
+        obj.transform.position = transform.position;
+        Destroy(gameObject);
+        PlayerMovement.Instance.Exploded(transform.position);
     }
 
     private void Update()
@@ -81,6 +100,15 @@ public class Rack : MonoBehaviour
         {
             emissions.enabled = false;
             m_shakeT = 0;
+        }
+
+        if (Mathf.Approximately(1f, m_rackLoad) || m_rackLoad > 1f)
+        {
+            if (!m_isExploding)
+            {
+                m_isExploding = true;
+                OnExplode?.Invoke(this);
+            }
         }
 
         Shake();

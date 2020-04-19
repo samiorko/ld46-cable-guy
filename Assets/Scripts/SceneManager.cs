@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -7,6 +8,7 @@ public class SceneManager : MonoBehaviour
 {
     public enum SceneState
     {
+        Null,
         Prep,
         Running,
         Losing,
@@ -29,8 +31,7 @@ public class SceneManager : MonoBehaviour
     }
 
     [SerializeField]
-    private SceneState _state = SceneState.Prep;
-
+    private SceneState _state;
     private SceneState m_previousState;
     private bool m_stateDidChange;
 
@@ -66,6 +67,16 @@ public class SceneManager : MonoBehaviour
         m_linkedRacks = Racks.ToDictionary(x => x, _ => new List<Rack>());
     }
 
+    private void Start()
+    {
+        foreach (var rack in Racks)
+        {
+            rack.OnExplode.AddListener(HandleRackExploded);
+        }
+
+        State = SceneState.Prep;
+    }
+
     private void Update()
     {
         if (State == SceneState.Running)
@@ -80,9 +91,10 @@ public class SceneManager : MonoBehaviour
 
         if (m_stateDidChange)
         {
-            if (State == SceneState.Running)
+            if (State == SceneState.Prep)
             {
                 IntroBanner.Instance.Show(m_header, m_subHeader);
+                Invoke(nameof(SetRunningState), IntroBanner.Instance.Duration);
             }
 
             if (State == SceneState.Winning)
@@ -122,6 +134,11 @@ public class SceneManager : MonoBehaviour
         m_previousState = State;
     }
 
+    public void SetRunningState()
+    {
+        State = SceneState.Running;
+    }
+
     public void SetWinningState()
     {
         State = SceneState.Winning;
@@ -140,6 +157,35 @@ public class SceneManager : MonoBehaviour
     public void SetLostState()
     {
         State = SceneState.Lost;
+    }
+
+    private void HandleRackExploded(Rack rack)
+    {
+        StopCoroutine(nameof(LosingRoutine));
+        StartCoroutine(nameof(LosingRoutine), rack);
+    }
+
+    private IEnumerator LosingRoutine(Rack rack)
+    {
+        State = SceneState.Losing;
+        Camera.main.GetComponent<FollowPlayer>().Target = rack.transform;
+        float cameraDistanceFromRack;
+
+        do
+        {
+            cameraDistanceFromRack = Vector2.Distance(Camera.main.transform.position, rack.transform.position);
+            yield return null;
+        } while (cameraDistanceFromRack > 1f);
+
+        //rack.Explode();
+
+        foreach (var failingRack in Racks.Where(x => Mathf.Approximately(x.Load, 1f) || x.Load > 1f))
+        {
+            failingRack.Explode();
+        }
+        yield return new WaitForSeconds(1f);
+
+        IntroBanner.Instance.Show("You failed to keep it alive", "Press R to restart", float.MaxValue);
     }
 
     private void AddLoad(float load)

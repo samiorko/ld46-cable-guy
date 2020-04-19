@@ -44,11 +44,6 @@ public class GameManager : MonoBehaviour
         LoadScene(GetNextSceneName());
     }
 
-    public void RestartLevel()
-    {
-
-    }
-
     private string GetNextSceneName()
     {
         var currentLevel = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;

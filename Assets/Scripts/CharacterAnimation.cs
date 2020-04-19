@@ -19,6 +19,11 @@ public class CharacterAnimation : MonoBehaviour
 
     private void Update()
     {
+        if (!PlayerMovement.Instance.MovementAllowed)
+        {
+            m_animator.SetFloat("walkSpeed", 0f);
+            return;
+        }
         m_animator.SetBool("ladder", PlayerMovement.Instance.Mode == PlayerMovement.MovementMode.Ladder);
 
         var movement = Input.GetAxis("Horizontal");

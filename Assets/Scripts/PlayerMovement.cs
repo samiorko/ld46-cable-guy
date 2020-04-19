@@ -46,6 +46,8 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D m_rb;
     public AudioClip m_jumpClip;
 
+    public bool MovementAllowed => AllowMovementInState(SceneManager.Instance.State);
+
 
     private void Awake()
     {
@@ -57,8 +59,11 @@ public class PlayerMovement : MonoBehaviour
         m_rb = GetComponent<Rigidbody2D>();
     }
 
+   
     private void Update()
     {
+        if (!MovementAllowed) return;
+
         if (Mode == MovementMode.Normal)
         {
             HandleNormalMovement();
@@ -69,6 +74,18 @@ public class PlayerMovement : MonoBehaviour
             IsGrounded = false;
             HandleLadderMovement();
         }
+    }
+
+    public void Exploded(Vector2 position)
+    {
+        var forceDir = (Vector2) transform.position - position;
+        var forceAmount = Mathf.Sqrt(forceDir.magnitude);
+
+        var force = forceDir.normalized * forceAmount * .1f;
+
+        m_rb.bodyType = RigidbodyType2D.Dynamic;
+        m_rb.freezeRotation = false;
+        m_rb.AddForce(force, ForceMode2D.Impulse);
     }
 
     private void HandleNormalMovement()
@@ -117,6 +134,19 @@ public class PlayerMovement : MonoBehaviour
             }
         }
     }
+
+    private bool AllowMovementInState(SceneManager.SceneState state)
+    {
+        switch (state)
+        {
+            case SceneManager.SceneState.Running:
+            case SceneManager.SceneState.Winning:
+                return true;
+            default:
+                return false;
+        }
+    }
+
 
     private void AttachToLadder(Ladder ladder)
     {

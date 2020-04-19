@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FollowPlayer : MonoBehaviour
 {
-    private Transform m_player;
+    public Transform Target;
     public float m_smoothTime;
     public float m_maxSpeed;
     public float m_cameraDistance;
@@ -15,12 +15,14 @@ public class FollowPlayer : MonoBehaviour
 
     private void Start()
     {
-        m_player = GameObject.FindGameObjectWithTag("Player").transform;
+        Target = GameObject.FindGameObjectWithTag("Player").transform;
     }
 
     private void LateUpdate()
     {
-        var target = ClampVector(m_player.position, m_boundsMin.position, m_boundsMax.position);
+        if (Target == null) return;
+
+        var target = ClampVector(Target.position, m_boundsMin.position, m_boundsMax.position);
 
         transform.position =
             Vector2.SmoothDamp(transform.position, target, ref m_currentVelocity, m_smoothTime, m_maxSpeed);

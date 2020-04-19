@@ -13,8 +13,12 @@ public class IntroBanner : MonoBehaviour
     public float m_durationWidth;
     public float m_durationHeight;
 
+    public float Duration => Mathf.Max(m_durationHeight, m_durationWidth) + m_keepOpenDuration;
+
     public Text m_headerTextComponent;
     public Text m_subHeaderTextComponent;
+
+    private float m_keepOpenDuration;
 
     private void Awake()
     {
@@ -26,8 +30,9 @@ public class IntroBanner : MonoBehaviour
     //    Show(m_header, m_subHeader);
     //}
 
-    public void Show(string header, string subHeader)
+    public void Show(string header, string subHeader, float duration = 5f)
     {
+        m_keepOpenDuration = duration;
         m_headerTextComponent.text = header;
         m_subHeaderTextComponent.text = subHeader;
 
@@ -56,7 +61,9 @@ public class IntroBanner : MonoBehaviour
             yield return null;
         }
 
-        yield return new WaitForSeconds(5f);
+        if (Mathf.Approximately(m_keepOpenDuration, float.MaxValue)) yield break;
+
+        yield return new WaitForSeconds(m_keepOpenDuration);
         yield return StartCoroutine(nameof(Close));
     }
 
