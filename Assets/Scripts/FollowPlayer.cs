@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class FollowPlayer : MonoBehaviour
 {
@@ -13,6 +11,8 @@ public class FollowPlayer : MonoBehaviour
     public Transform m_boundsMin;
     public Transform m_boundsMax;
 
+    public bool DisableBounds { get; set; }
+
     private void Start()
     {
         Target = GameObject.FindGameObjectWithTag("Player").transform;
@@ -22,7 +22,7 @@ public class FollowPlayer : MonoBehaviour
     {
         if (Target == null) return;
 
-        var target = ClampVector(Target.position, m_boundsMin.position, m_boundsMax.position);
+        var target = DisableBounds ? (Vector2) Target.position : ClampVector(Target.position, m_boundsMin.position, m_boundsMax.position);
 
         transform.position =
             Vector2.SmoothDamp(transform.position, target, ref m_currentVelocity, m_smoothTime, m_maxSpeed);

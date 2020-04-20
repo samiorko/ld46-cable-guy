@@ -254,7 +254,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.735849, g: 0.735849, b: 0.735849, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -273,12 +273,12 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: "Today is %CURRENT_DATE%. \n\nYou finally start your dream job at LickyDoorknobs
-    (LD) Jam organization, as a server administration in charge of the webiste servers
-    for whole event.\n\nYour job is to make sure that the website stays available
+    (LD) Game Jam organization, as a server administration in charge of the webiste
+    servers for whole event.\n\nYour job is to make sure that the website stays available
     under increasing traffic by making sure the load is distributed evenly amongs
     the servers distributed around the rather poorly designed LD Server Facility.
-    \n\n\nKeep the website alive, or get fired on your first day.\n\nPress space
-    to continue."
+    \n\n\nKeep the website alive, or get fired on your first day.\n\nMade for Ludum
+    Dare 46, with theme \"Keep it alive\"\n\nPress space to continue."
 --- !u!222 &860912043
 CanvasRenderer:
   m_ObjectHideFlags: 0

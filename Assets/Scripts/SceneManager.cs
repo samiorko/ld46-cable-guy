@@ -103,22 +103,31 @@ public class SceneManager : MonoBehaviour
                     .Select(x => (x.GetComponent<RopeRenderer>().Points.Count * RopeReel.Instance.m_partLength) / 2)
                     .Sum();
 
+                string subHeader;
+
                 if (ropeTotalLength < 100)
                 {
-                    IntroBanner.Instance.Show("Level complete!", $"You laid {ropeTotalLength} meters of cable.");
+                    subHeader = $"You laid {ropeTotalLength} meters of cable.";
                 } else if (ropeTotalLength < 500)
                 {
-                    IntroBanner.Instance.Show("Level complete!", $"You laid {ropeTotalLength} meters of cable. Nice!");
+                    subHeader = $"You laid {ropeTotalLength} meters of cable. Nice!";
                 } else if (ropeTotalLength < 1000)
                 {
-                    IntroBanner.Instance.Show("Level complete!", $"You laid {ropeTotalLength} meters of cable. That seems... excessive");
+                    subHeader = $"You laid {ropeTotalLength} meters of cable. That seems... excessive";
                 } else if (ropeTotalLength < 1000)
                 {
-                    IntroBanner.Instance.Show("Level complete!", $"You laid {ropeTotalLength} meters of cable. That's crazy!");
+                    subHeader = $"You laid {ropeTotalLength} meters of cable. That's crazy!";
                 } else
                 {
-                    IntroBanner.Instance.Show("Level complete!", $"{ropeTotalLength} meters...");
+                    subHeader = $"{ropeTotalLength} meters...";
                 }
+
+                if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name.Equals("Tutorial"))
+                {
+                    subHeader += " Exit the level near where you started.";
+                }
+
+                IntroBanner.Instance.Show("Level complete!", subHeader);
             }
 
             if (State == SceneState.Won)
@@ -169,6 +178,7 @@ public class SceneManager : MonoBehaviour
     {
         State = SceneState.Losing;
         Camera.main.GetComponent<FollowPlayer>().Target = rack.transform;
+        Camera.main.GetComponent<FollowPlayer>().DisableBounds = true;
         float cameraDistanceFromRack;
 
         do
@@ -237,6 +247,12 @@ public class SceneManager : MonoBehaviour
 
     public bool CalculateOverloadTime(out TimeSpan overloadTime)
     {
+
+        if (State != SceneState.Running && State != SceneState.Prep)
+        {
+            return false;
+        }
+
         // Figure out using the current curve when the server would overload. Do it by just simply trying out values until hit.
         var racksConnected = FindAllLinkedRacks(Racks[0]).Count;
         var currentCapacity = racksConnected / (float) Racks.Count;

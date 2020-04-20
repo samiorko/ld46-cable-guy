@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,12 +11,14 @@ public class GameUI : MonoBehaviour
     public GameObject m_serverStatusPrefab;
     public Text m_usersText;
     public Text m_overloadingText;
+    public Text m_finalWarningText;
 
     private void Start()
     {
         Refresh();
-        m_overloadingText.text = "Server overloading in...";
-        StartCoroutine(nameof(UpdateOverloadingText));
+        m_overloadingText.text = "Server overloading in ...";
+        Invoke(nameof(StartUpdatingLoadingText), 2f);
+        m_finalWarningText.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -33,20 +34,43 @@ public class GameUI : MonoBehaviour
         }
     }
 
+    private void StartUpdatingLoadingText()
+    {
+        StartCoroutine(nameof(UpdateOverloadingText));
+    }
+
     private IEnumerator UpdateOverloadingText()
     {
         while (true)
         {
+            var interval = 1f;
             if (SceneManager.Instance.CalculateOverloadTime(out var overLoadTime))
             {
-                m_overloadingText.text = $"Server overloading in {overLoadTime.TotalSeconds} seconds";
+                if (overLoadTime.TotalSeconds < 15)
+                {
+                    interval = .25f; // Increase check frequency when nearing the end
+                }
+
+                var seconds = (int) overLoadTime.TotalSeconds - 1;
+                m_overloadingText.text = $"Server overloading in {seconds} seconds!";
+                if (seconds <= 10)
+                {
+                    m_finalWarningText.gameObject.SetActive(true);
+                    m_finalWarningText.text = $"{seconds}";
+                    m_finalWarningText.fontSize = 50 + (10 - seconds) * 10;
+                }
+                else
+                {
+                    m_finalWarningText.gameObject.SetActive(false);
+                }
             }
             else
             {
+                m_finalWarningText.gameObject.SetActive(false);
                 m_overloadingText.text = "Servers can handle it!";
             }
 
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(interval);
         }
     }
 
